@@ -1,5 +1,6 @@
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
+import com.service.app.microservices.TimeMicroService;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
@@ -24,7 +25,8 @@ public static void main(String[] args) throws IOException {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             // Manejar la solicitud y enviar una respuesta simple
-            String response = "¡Hola, este es un servidor HTTP simple en Java 8!";
+            TimeMicroService t = new TimeMicroService();
+            String response = t.getTiempo();
             exchange.sendResponseHeaders(200, response.length());
             OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes());
