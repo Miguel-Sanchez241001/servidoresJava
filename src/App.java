@@ -1,31 +1,35 @@
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 public class App  {
 
-   public static void main(String[] args) throws IOException {
-        // Crea un servidor socket que escuche en el puerto 8080
-        ServerSocket servidor = new ServerSocket(8080);
+public static void main(String[] args) throws IOException {
+        // Crear un servidor en el puerto 8080
+        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
+        // Crear un contexto para manejar las solicitudes en la raíz del servidor
+        server.createContext("/", new MyHandler());
 
+        // Iniciar el servidor
+        server.start();
 
-        
-        // Espera a que se conecte un cliente
-        Socket cliente = servidor.accept();
+        System.out.println("Servidor iniciado en el puerto 8080");
+    }
 
-        // Lee la solicitud del cliente
-        byte[] datos = new byte[1024];
-        cliente.getInputStream().read(datos);
-
-        // Escribe una respuesta al cliente
-        cliente.getOutputStream().write("Hola, mundo!".getBytes());
-        
-        // Cierra la conexión con el cliente
-        cliente.close();
-
-        // Cierra el servidor socket
-        servidor.close();
+    static class MyHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            // Manejar la solicitud y enviar una respuesta simple
+            String response = "¡Hola, este es un servidor HTTP simple en Java 8!";
+            exchange.sendResponseHeaders(200, response.length());
+            OutputStream os = exchange.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
     }
 }
 
